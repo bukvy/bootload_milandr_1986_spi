@@ -1,0 +1,1023 @@
+commit 41328f3bc34dc72f90592c3ecdfd7427a3eeeabc
+Author: Alexey Zelepukin <zelepukin@vympel.renet.ru>
+Date:   Tue Dec 5 13:36:35 2017 +0400
+
+    Добавлена функция посылки сигнала пробуждения CPU с интерфейсного модуля
+
+commit cbd30e4d86ee04510063782d24138fa29121b681
+Author: Alexey Zelepukin <zelepukin@vympel.renet.ru>
+Date:   Wed Nov 23 18:50:43 2016 +0400
+
+    Увеличен таймаут ожидания сигнала EXT_SPI_CHK (починка работы RSSW)
+
+commit 16c845f960c205cf31afeb109c138b3fc322d9bd
+Author: Kazakov Ilya <kazakov@vympel.renet.ru>
+Date:   Wed Nov 2 16:49:05 2016 +0300
+
+    Исправил ошибку перепрошивки модуля ait12.
+
+commit d4b66f564513501aaa0bc15903ccdca4ad2ec5d1
+Author: Kazakov Ilya <kazakov@vympel.renet.ru>
+Date:   Sun Oct 16 17:02:40 2016 +0300
+
+    Поправил функцию burn_s19_line_64. Она работает корректно, по крайней мере на сколько я смог проверить.
+    Добавил отладочную информацию, которую нужно будет удалить после отладки.
+
+commit 0fa634d078cbd740a9f91ef371e5d439f9cd4bb3
+Merge: cc36eb1 e7c6ac0
+Author: Alexey Zelepukin <zelepukin@vympel.renet.ru>
+Date:   Fri Jul 15 09:25:32 2016 +0400
+
+    Merge branch 'vympel' of 192.168.2.30:/plc/vplc_common into vympel
+
+commit cc36eb102b2d08da90fa62daa970592f7c8392f8
+Author: Alexey Zelepukin <zelepukin@vympel.renet.ru>
+Date:   Fri Jul 15 09:22:59 2016 +0400
+
+    Исправил длину цикла для вычисления таймаута ответной передачи по SPI (не работал RSSW в резервированном крейте)
+
+commit e7c6ac05b4aeeffe1e64a0884f9d9d449a9978d1
+Author: Kazakov Ilya <kazakov@vympel.renet.ru>
+Date:   Mon Jul 11 11:25:00 2016 +0300
+
+    Исправил ошибку пересечения имён. Из-за этой ошибки было невозможно перейти
+    из прошивки в загрузчик. Эта ошибка проявлялась в платах DIO16, DI32, DI12F.
+    Суть ошибки, в проекте vplc_common обявлена переменная config. Переменная
+    с таким же имененим объявлена в прошивках DIO16, DI32, DI12F. Компилятор
+    не выдаёт никаких сообщений по этому поводу, просто берёт последнюю
+    объявленную переменную.
+
+commit 21746256dfacfa8303fa6305ff936d531f38c13c
+Author: Alexey Zelepukin <zelepukin@vympel.renet.ru>
+Date:   Fri May 13 12:04:44 2016 +0400
+
+    Исправил ошибку, приводившую к перезагрузке модуля в крейте в результате некорректного завершения транзакции обмена по SPI ПЛИС интерфейсного модуля
+
+commit 5d3072a175f16e76107778fd012c51ca3241ca64
+Author: Kazakov Ilya <kazakov@vympel.renet.ru>
+Date:   Fri Dec 18 17:03:02 2015 +0300
+
+    Добавил проект DO24
+
+commit c9d1141ed8c5b61a754fe63e670fe76d6028f3dd
+Author: Kazakov Ilya <kazakov@vympel.renet.ru>
+Date:   Fri Dec 18 16:48:14 2015 +0300
+
+    Добавил функцию прошивки нового CPU.
+
+commit c2c6c8814aa753f6f2674112e1f189df270d113e
+Author: Kazakov Ilya <kazakov@vympel.renet.ru>
+Date:   Wed May 6 17:25:49 2015 +0300
+
+    Добавил проект di32.
+
+commit f9e421e6725e29262ba03cca20d715765316f5c5
+Author: Kazakov Ilya <kazakov@vympel.renet.ru>
+Date:   Wed Apr 22 18:32:45 2015 +0300
+
+    Добавил AI32
+
+commit d76df914fb2f45501c8e54152cf37d902df7a372
+Author: Kazakov Ilya <kazakov@vympel.renet.ru>
+Date:   Wed Apr 8 09:43:01 2015 +0300
+
+    Поправил потенциальную ошибку переполнения буфера. До этого исправления модуль DI12F не шился через CPU.
+
+commit fce7abb9630deeb5214a5ec6e20cac7530666c90
+Author: Kazakov Ilya <kazakov@vympel.renet.ru>
+Date:   Tue Apr 7 16:20:03 2015 +0300
+
+    Поправил ошибку которая могла приводить невозможности автоматической загрузки прошивки (get_autoboot = 255).
+    Эта ошибка касается всех загрузчиков плат dio16, aio8, di12f, ait12, fesw, rssw, im. Но проявлялась она только на ait12.
+    Вероятно это связано с тем что в этой плате стоит немного другой процессор.
+    Переписал сохранение конфигурации загрузчика. Теперь он сохраняет все настройки за раз.
+
+commit b5d07c03a3c2ff0a28aaa3e7bba424163a9cbf37
+Author: Kazakov Ilya <kazakov@vympel.renet.ru>
+Date:   Tue Apr 7 11:05:38 2015 +0300
+
+    Удалил лишние папки и файлы. Они генерируются автоматически при сборке.
+
+commit b5a37f48a8d46a473c897782dc76dddd8f73a790
+Author: Kazakov Ilya <Kazakov@vympel.renet.ru>
+Date:   Tue Mar 24 17:09:10 2015 +0300
+
+    Добавил проект vplc_common для платы AIT12
+
+commit a83dcc9a877ca3fac42753595da8b6efc7f8a23a
+Author: Alexey Zelepukin <zelepukin@vympel.renet.ru>
+Date:   Wed Jan 14 14:53:29 2015 +0400
+
+    Добавлен обход ошибки: попытка переинициализации порта UART, используемого для связи между ЦПУ и интерфейсным модулем, иногда приводила к зависанию интерфейсного модуля
+
+commit 18a1d38944f442bf40ce7cb889e358f55e3fd4ca
+Author: Alexey Zelepukin <zelepukin@vympel.renet.ru>
+Date:   Thu Oct 30 14:50:42 2014 +0400
+
+    Увеличили скорость ответа модулей ЦПУ
+
+commit 10f30aded5d18ddec4fbaaba491df5647f79f5b3
+Author: Igor Bogomolov <igor_bogomolov@skitlab.ru>
+Date:   Wed Jun 19 15:41:38 2013 +0400
+
+    fp: увеличена задержка перед перезагрузкой устройства
+    
+    Это решило проблему оставания в загрузчике одного из kinetis'ов на RSSW
+    после перепрошивки.
+
+commit b2bb6df9e51f02ceab936c151ee71921472b4f2f
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Mon Dec 10 14:28:28 2012 +0400
+
+    blockage: исправлена сборка проектов, не использующих компонент SW_WATCHDOGS
+
+commit 05631f74fd99137640ee9a764b454ceea230aa86
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Tue Dec 4 16:29:04 2012 +0400
+
+    altera_jbc: исправлена обработка ошибки CRC файла прошивки
+    
+    В реализации процедуры прошивки имелось 2 ошибки:
+    - при прошивке через ferret_proto с отключенным verbose
+     режимом, не запускалась проверка на CRC вообще;
+    - функция проверки CRC не возвращала ошибку даже если
+     ошибки имели место.
+    
+    В итоге это приводило к ошибкам недостатка свободной памяти
+    при прошивке через ferret_proto.
+
+commit 4db0349ea6e9f4145c5fbcbae1993d7cf557c82f
+Author: Igor Bogomolov <igor_bogomolov@skitlab.ru>
+Date:   Tue Dec 4 13:20:42 2012 +0400
+
+    block: добавил функции "приостановки" и "возабновления" sw watchdog
+    
+    Функция приостановки, на самом деле, просто делает timeout программного
+    watchdog'a равной 5 минутам, а возобновления возвражщает timeout в
+    установленный пользователем.
+    
+    Также переделана последовательность перезапуска программного watchdog'a
+    для сокращения нагрузки на kinetis.
+
+commit cb721e8aaaf1e7a199e311a6dd8e3e25eed740c0
+Author: Igor Bogomolov <igor_bogomolov@skitlab.ru>
+Date:   Mon Nov 26 13:17:36 2012 +0400
+
+    block: добавил возможность принудительно выставить блокировку
+
+commit 77ea217cb3398aa56e84061f17195d6dd18e3d8e
+Author: Igor Bogomolov <igor_bogomolov@skitlab.ru>
+Date:   Fri Nov 23 13:40:59 2012 +0400
+
+    block: добавил в проектные файлы blockage.[c|h]
+
+commit 14b97d762acd34eb784490ffe9ab8092cf354b8a
+Author: Igor Bogomolov <igor_bogomolov@skitlab.ru>
+Date:   Fri Nov 23 12:14:18 2012 +0400
+
+    block: добавлен новый модуль для отлова "блокировок"
+    
+    На самом деле модуль отслеживает некоторые программные ошибки и уведомляет
+    о их возникновении. На данный момент отлавливается три ситуации:
+      1. загрузка платы после срабатывания аппаратного watchdog'a. К такому
+      сбою приводит, например, вызов printf в обработчике прерывания. Более
+      глубоко этот момент не исследовался, но предпологаю, что такое же
+      поведение будет наблюдаться при не соблюдении пунктов 3.9.3.1 и
+      3.9.3.2 из руководства пользователя MQX.
+    
+      2. срабатывание программого watchdog. К подобной ситуации может
+      привести только зависание таска, например, в бесконечном цикле.
+    
+      3. возникновение аппаратного исключения. К этой ситуации приводит,
+      например, попытка обратиться по адресу за пределами flash.
+    
+    При возникновении одной из вышеописанных ситуаций, будет вызван
+    зарегистрированный обработчик, в который передастся, что именно
+    произошло.
+    
+    Важно: зарегистрированный в модуле обработчик вызывается в контексте
+    прерывания, следовательно от должен соответствовать требованиям
+    предъявляемым к обработчикам прерываний.
+    
+    Важно: модуль не регистрируется в системе при поможи вызова block_init,
+    несмотря на то, что такая функция есть. Модуль должет стартовать сразу
+    после загрузки системы, т.е. таск SW_WDT_task должен быть добавлен в
+    MQX_template_list c флагом MQX_AUTO_START_TASK.
+    
+    Дополнительную информацию по использованию модуля смотрите на странице
+    задачи skitlab.int/bts/issues/483
+
+commit 51c54cd385b17ee396b91140072a8d84107733ce
+Author: Igor Bogomolov <igor_bogomolov@skitlab.ru>
+Date:   Mon Nov 19 19:54:02 2012 +0400
+
+    Удалил заголовочный файл printf.h
+    
+    Идея с подобным отключением printf была в корне неверной.
+    Для отключения отладочной консоли нужно не вызывать в init_bsp.c функцию
+    _io_serial_default_init. Данная функция назначает BSP_DEFAULT_IO_CHANNEL
+    как канал для стандартных потоков ввода-вывода (stdin, stdout, stderr).
+    
+    Все функции для работы с потоками ввода-вывода являются "безопасными".
+    Т.е. они проверяют существование канала с ними связанного. Если его не
+    существует, просто ничего не произойдет, в том числе зависания :)
+
+commit 159a0d9dab35c8304f5fadc008b498e22f7bf11c
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Mon Nov 12 17:03:03 2012 +0400
+
+    at25: исправлена запись в EEPROM по адресам старше 128
+    
+    В коммите, добавляющим проверку таймаута при чтении/записи EEPROM
+    необходимо дополнительное исправление, а именно: в любом случае делать
+    паузу в 1 мс перед проверкой статусного регистра (так и написано в
+    драйвере Linux ядра, было неверно перенесено).
+    
+    Так же подкорректированы адреса EEPROM, где выполняется тест. До этого
+    были указаны слишком большие адреса.
+
+commit efe2af73f05105d2632c0ee9cee28259dd92e8be
+Author: Igor Bogomolov <igor_bogomolov@skitlab.ru>
+Date:   Sun Nov 11 14:32:22 2012 +0400
+
+    fp_uart: все команды теперь отдаются только по запросу
+    
+    Ошибка #464: решено
+    Приведённая выше ошибка решилась автоматически с ликвидированием "master"
+    режима отдачи данных.
+
+commit e0162bdbf7c0dcf41f9ad0afffc78202fa35cd4d
+Author: Igor Bogomolov <igor_bogomolov@skitlab.ru>
+Date:   Sun Nov 11 14:30:20 2012 +0400
+
+    fp_uart: добавил функцию переинициализации протокола
+
+commit 125a12b9631939475c8e09e76ab64f243dddc701
+Author: Igor Bogomolov <igor_bogomolov@skitlab.ru>
+Date:   Fri Nov 2 09:37:13 2012 +0400
+
+    fp: привёл в порядок код регистрации протокола в подсистеме lpm
+
+commit 99a2a99e892296be4bc03d36f4ed9b083096c4d6
+Author: Said Syakin <said.syakin@skitlab.ru>
+Date:   Wed Oct 31 17:16:56 2012 +0400
+
+    ferret_proto: added registration of fp_tu_timer in the lpm system
+
+commit 31c19069046613c698bc9a3fe0c752c44b5b48c1
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Thu Nov 8 16:14:58 2012 +0400
+
+    spi_ferret_proto: выставление сигнала готовности данных делается только по готовности CPU
+    
+    С целью исправления ситуации порчи данных при обмене с двумя
+    устройствами разным их количеством, необходимо исправление в логике
+    отдачи данных центральному модулю, а именно -- отдавать данные только
+    если модуль готов их принять.
+    
+    В противном случае, возможна ситуация, когда готовность выставляется еще
+    до того, как данные полностью переданы всем модулям. Защиты от этого у
+    центрального модуля нет.
+    
+    Дополнительно, необходимо соответствующее изменение в прошивке ПЛИС
+    Интерфейсного модуля.
+
+commit 9d23fb1abc6ec023a104408eb74a61492ddc5ca3
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Wed Nov 7 16:25:27 2012 +0400
+
+    at25: добавлена защита от зависаний при нерабочей EEPROM
+    
+    параметры таймаутов взяты из соответствующего linux драйвера at25.c
+
+commit 62fa9f4a93403d54ebb1b0d22af532b4a568620e
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Wed Nov 7 13:50:42 2012 +0400
+
+    fp: добавлена поддержка переделанного варианта тестов ferret_proto
+    
+    Для прошивок устройств никаких изменений -- только пересборка.
+
+commit 38aa63b04eee462b1c38c10c958847ab3f8176b0
+Author: Igor Bogomolov <igor_bogomolov@skitlab.ru>
+Date:   Wed Oct 17 15:51:28 2012 +0400
+
+    fp: timeout выполнения обработчика команды зафиксирован для всех плат и
+    равен 600мкс
+
+commit 17efd5e381e2f79060d5810c0213d31d382a4133
+Author: Igor Bogomolov <igor_bogomolov@skitlab.ru>
+Date:   Tue Oct 9 10:58:36 2012 +0400
+
+    fp_uart: удалён не используемый более код
+
+commit 710555074cc31e9816cf14d2196c2803d24587e3
+Author: Igor Bogomolov <igor_bogomolov@skitlab.ru>
+Date:   Mon Oct 8 11:55:28 2012 +0400
+
+    fp_uart: исправлена переинициализация ferret протокола через uart
+
+commit ac8920fe73b5a4364c08dc6282139ac3773b0083
+Author: Igor Bogomolov <igor_bogomolov@skitlab.ru>
+Date:   Wed Sep 12 15:37:39 2012 +0400
+
+    fp_uart: корректирующий коммит, исправляющий работу в режиме загрузчика
+    
+    Заодно удалил подключение printf.h там где оно не нужно.
+
+commit 8ad8294767554a68fab43d4eb96380fbc4830859
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Wed Sep 12 14:41:49 2012 +0400
+
+    lwgpio_isr: некоторое причесывание кода. добавлена возможность не задавать явно lwgpio_attribute
+    
+    в процессе отладки обнаружились подозрительные процессы при удалении
+    добавленного обработчика и перенастройке использованного пина на выход
+    с последующей повторной активацией обработчика.
+    
+    решилась проблема в другом месте, но на уровне lwgpio_isr отлажено
+    все-таки не до конца.
+    
+    в частности, выснено, что иногда вредно применять задание атрибута пина,
+    поэтому в случае, если при регистрации передается 0 в качестве атрибута,
+    соответствующая функция не вызывается.
+
+commit cf022ca15877da7d9984b16654dfae56b9ada525
+Author: Igor Bogomolov <igor_bogomolov@skitlab.ru>
+Date:   Tue Sep 4 16:13:17 2012 +0400
+
+    uart_fp: изменена схема отправки данных по протоколу
+    
+    Теперь kinetis может выступать как master и самостоятельно отправлять
+    комманды по ferret протоколу. Это потребовалось для отправки
+    компортовских данных из kinetis в imx.
+
+commit 52e59c753bdc46c745e1cebedee24203a21f62b6
+Author: Igor Bogomolov <igor_bogomolov@skitlab.ru>
+Date:   Tue Sep 4 16:07:56 2012 +0400
+
+    fp: исправлена ошибка в определении подвисшего BUSY
+
+commit 8b59c544d402ea5d8f5f2fe1ec3c470748a1a42f
+Author: Igor Bogomolov <igor_bogomolov@skitlab.ru>
+Date:   Tue Sep 4 16:06:35 2012 +0400
+
+    fp: скоректирована статистика ferret протокола
+
+commit 8c5a85daa0802838369bc75f2957031a085260dc
+Author: Igor Bogomolov <igor_bogomolov@skitlab.ru>
+Date:   Tue Sep 4 15:59:00 2012 +0400
+
+    printf для платы без консоли разворачивается в пустую операцию
+
+commit e1b280d258d57cd4bcd24e06a372d5201eac5efd
+Author: Igor Bogomolov <igor_bogomolov@skitlab.ru>
+Date:   Fri Aug 24 11:39:30 2012 +0400
+
+    fp_uart: прерывания по GPIO работают через lwgpio_isr из common
+
+commit a3889e313e3dec3472f606dabdee8415208158f0
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Fri Aug 17 09:56:06 2012 +0400
+
+    fp: в информацию об устройстве FP_CMD_BOARD_INFO добавлен uptime
+
+commit 5991c0424693d91d76946daf2127dbf26ef3e600
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Mon Aug 13 17:31:11 2012 +0400
+
+    ferret_proto: добавлена поддержка серийного номера устройства
+    
+    - в команду FP_CMD_BOARD_INFO добавлено поле serial;
+    - в структуру FP_CONFIG добавлено требование указать функции
+    для установки/чтения серийного номреа устройства;
+    - добавлена команда FP_CMD_SET_SERIAL_NUM (0x10) для
+    изменения серийного номера устройства с центрального модуля.
+
+commit c7c45d685b8c8676394e2925cdea819138d935d7
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Fri Aug 10 16:38:46 2012 +0400
+
+    добавлен драйвер AT25 EEPROM
+    
+    перенесены и переработаны исходные тексты, используемые в проектах.
+    
+    теперь драйвер настраиваемый. настраиваются следующие параметры:
+    - SPI канал;
+    - частота SPI;
+    - тип микросхемы;
+    
+    так же, как и раньше необходимо вызывать функцию инициализации
+    перед началом использования.
+    
+    функции сохранили синтаксис с точностью до замены eeprom_ на at25_
+
+commit 24492811500a3a796d5390aaefc4fd27bf507c6a
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Wed Jul 25 08:51:09 2012 +0400
+
+    fp: добавлено ограничение на время выполнения fp_handlers
+    
+    для защиты от ситуации с очень долго (или бесконечно) работающими обработчиками
+    команд ferret протокола, которые приведут в частности к постоянно возникающим
+    BUSY ошибкам на стороне центрального модуля, введена процедура проверки
+    времени выполнения обработчика.
+    
+    пока время выполнения не истекло, будут отсылаться BUSY ошибки, по истечении
+    заданного интервала, задача, выполняющая обработчик, будет перезапущена, а
+    центральному модулю отослано сообщение с ошибкой FP_ERR_ANS_UNKNOWN.
+    
+    время на работу обработчика отводится 5 сек. может быть подкорректировано,
+    но лучше не допускать подобных обработчиков, либо выполнять их в фоновом
+    режиме.
+
+commit 6da6037f52bb7bd110065224fe306afb48375a9e
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Tue Aug 7 15:28:27 2012 +0400
+
+    bldr: добавлена проверка настроек с помощью CRC. изменена логика работы с настройками.
+    
+    введение проверки настроек посредством CRC потребовало явного введения
+    процедуры инициализации, которая проверяет текущие настройки и сверяет
+    CRC суммы. в случае несовпадения CRC, применяются настройки по умолчанию.
+    
+    функция инициализации должна вызываться только раз и только в загрузчике.
+    на самом деле, если она будет вызвана несколько раз и не в загрузчике, то
+    ничего страшного, но это просто излишне.
+    
+    добавлены соответствующие комментарии.
+    
+    данное изменение требует пересборки прошивок устройств, т.к. изменились
+    адреса переменных с настройками.
+
+commit 4447a40c6d8f450ae5d48f861d2d9380b4d656c6
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Fri Jul 20 16:29:52 2012 +0400
+
+    fp: вызов чтения данных с аппаратного уровня перенесен в task fp_parse_data()
+    
+    цель - убрать из fp_recv_start(), которая выполняется в контексте прерывания
+    функции, которые могут выполнятся долго - в первую очередь вызов функции чтения
+    с аппаратной шины.
+    
+    в итоге была упразднена функция fp_recv(), её оставшееся содержимое: проверка
+    на режим энергосбережения и (основное) проверка на состояние BUSY, были перенесены
+    в fp_recv_start() из которой теперь отпускается семафор fp_parse_sem.
+    
+    соответственно функция чтения данных и остальные по обработке считанных перенесена
+    в контекст task'а fp_parse_data()
+
+commit 9a01ee91db7e777eed4628a67648980633fdff30
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Fri Jul 20 15:27:26 2012 +0400
+
+    spi_fp: при деинициализации используется API дерегистрации обработчиков модуля lwgpio_isr
+
+commit 32d9fab50902b218859ba76ee7a810b7f922d8b2
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Fri Jul 20 15:26:42 2012 +0400
+
+    lwgpio_isr: добавлена дерегистрация обработчиков, исправлено использование одного обработчика на разные вектора
+
+commit 90c8daef334746c4d0b569e3d77a0f0ce06819bd
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Fri Jul 20 11:04:08 2012 +0400
+
+    fp: исправлена отправка 0-го идентификатора команды при некоторых сообщениях об ошибке
+
+commit bea0f77c0f3174b1ccebc85ee0ff1cd8ddc0a273
+Author: Igor Bogomolov <igor_bogomolov@skitlab.ru>
+Date:   Thu Jul 12 21:36:41 2012 +0400
+
+    uart_ferret_proto: исправлены критические ошибки в реализации ferret
+    протокола через аппаратную шину UART.
+
+commit 4ebe31eea41b79de9ed15903371685cec9263cee
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Fri Jul 20 10:53:43 2012 +0400
+
+    uart_fp: вызов запуска приема в ferret_proto адаптирован под последние изменения в API
+
+commit 236b50cbbd5491734e3d9390f07766e051e26bfa
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Fri Jul 20 10:52:38 2012 +0400
+
+    добавлен модуль uart_ferret_proto
+    
+    uart_ferret_proto -- реализация ferret протокола через аппаратную шину UART.
+    
+    orirginally authored by Igor Bogomolov <igor_bogomolov@skitlab.ru>
+
+commit af5d92d800b37cbd70b6617e48f11798a5ac0668
+Author: Igor Bogomolov <igor_bogomolov@skitlab.ru>
+Date:   Tue Jul 10 10:25:07 2012 +0400
+
+    fp: расширена статистика по ошибочным пакетам ferret протокола
+
+commit 6ff28f4b67575888d96ee68006a347c8783cc2ab
+Author: Igor Bogomolov <igor_bogomolov@skitlab.ru>
+Date:   Fri Jun 1 18:50:32 2012 +0400
+
+    duart: добавлено динамическое включение/отключение возможности записи в отладочную консоль
+    
+    Вызов функции printf больше не приводит к зависанию платы. Не происходит
+    именно запись в порт, все накладные расходы связанные с форматированием
+    текста остаются.
+    
+    Для плат, которые не предпологают отладочной консоли, предлогается
+    другой вариант отключения printf. Для этого в настройках bsp необходимо
+    указать, что отладочная консоль не используется (см.
+    BSP_DEFAULT_IO_CHANNEL_DEFINED), а в проекте, везде где требуется,
+    подключать printf из common. Это полностью отключает оригинальный printf
+    и ликвидирует все расходы с ним связанные."
+
+commit f9d7b43747f39a6c8fde27833b35ab71175bc2c3
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Fri Jul 20 10:10:22 2012 +0400
+
+    aio8: .project: исправлен путь до spi_ferret_proto.h
+
+commit 9ad47494a9c7e59671adfdbe956c64d5a90ac80d
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Fri Jul 20 10:09:02 2012 +0400
+
+    fp: значительное изменение в реализации логики работы
+    
+    проведено множество изменений направленных на увеличение стабильности
+    работы ferret_proto, среди них:
+    - из нижнего аппаратного уровня начало процедуры приема сигнализируется
+      не отпусканием семафора, а запуском функции fp_driver'а
+    - в ferret_proto.c совершен уход от rx_task и send_timeout_task, в
+      функции recv_start(), вызываемой нижним уровнем, делаются базовые
+      проверки корректности данных и при необходимости формируются ответы
+      центральному модулю.
+    - процедура парсинга корректно принятого пакета осталась в отдельном
+      task'е (необходимо для обработки BUSY)
+    - отправка ответов центральному модулю делается только по таймеру,
+      даже если ответ был готов раньше.
+    - функция отправки ответа с ошибкой заменена функцией подготовки этого
+      ответа и непосредственно отправкой, которая вызывается по таймауту.
+
+commit 27898eb501d7528fade7a7e9ccfc5ec78d63405f
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Fri Jul 20 10:01:42 2012 +0400
+
+    WARN! spi_fp: добавлен сигнал проверки операции приема/отправки
+    
+    во всех прошивках, использующих передачу ferret_proto по SPI
+    необходимо в struct spi_fp_config в добавленных полях
+    ext_spi_chk_gpio и ext_spi_chk_gpio_mux указать физически
+    используемый пин.
+    
+    реализация проверки операции приема/отправки достаточно
+    примитивна, и при необходимости может быть расширена.
+    
+    WARN! предполагается (и это не должно быть изменено аппаратно,
+    что 0 на пине означает прием, а 1 - отправку.
+
+commit b92d0f9f0eb66d1b46134201269f9a454a541d82
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Fri Jul 20 08:37:02 2012 +0400
+
+    WARN! fp: таймаут отсчитывания таймера указывается в микросекундах
+    
+    ранее необходимо было указывать таймаут срабатывания PIT таймера,
+    по которому происходит отправка ответа центральному модулю в виде
+    32-х битного hex значения, прописываемого непосредственно в
+    регистр управления таймером.
+    
+    это неудобно, т.к. значение зависит от частоты ядра и приходилось
+    постоянно с помощью Processor Expert генерировать новую конфигурацию
+    для определения этого значения.
+    
+    сейчас добавлен пересчет из микросекунд в значение счетчика на
+    основе текущей частоты шины.
+    
+    соответственно, изменился смысл поля в struct fp_config. поэтому
+    необходимо перепроверить изменение этой настройки во всех прошивках.
+
+commit 3cfe6a800f7b123abf0ff9b8262ca0618497a277
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Fri Jul 20 08:30:59 2012 +0400
+
+    spi_fp: добавлена проверка на 0 длины полученного пакета
+
+commit bd9be2019886dc8108ae04091793cec58d119c59
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Fri Jul 20 08:29:59 2012 +0400
+
+    spi_fp: прерывание от CS переведено на использование lwgpio_isr
+
+commit bcc731719d6ecb97a7aeefdbc7d50fd246e69398
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Fri Jul 20 08:28:16 2012 +0400
+
+    duart: прерывание о вставленном кабеле переведено на использование lwgpio_isr
+
+commit 46847284cf6a140f97b93ca94f49f6201271a63f
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Wed Jul 11 20:04:04 2012 +0400
+
+    lwgpio_isr: добавлено API, обобщающее регистрацию обработчиков прерываний от внешних пинов
+    
+    подробное описание и инструкции по применению см. в include/lwgpio_isr.h
+
+commit aa7d5222b3f7f59e6aef71456d5c099c48d8d70f
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Fri Jul 6 11:41:32 2012 +0400
+
+    spi_fp: перед выставлением 1 на сигнал EXT_SPI_INT явно выдается 0
+    
+    необходимо для обеспечения наличия RISING_EDGE на этом сигнале
+
+commit 75364103e67c8968fd555a299c4512fd97b9e5ed
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Fri Jul 6 11:40:42 2012 +0400
+
+    fp: перешел обратно на передачу по прерыванию. изменено поведение при ответе на недавний timeout
+    
+    подробнее, см. изменения и комментарии непосредственно в тексте коммита.
+
+commit 37dd702bac39426febe28a3479855ee0fbec63d7
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Fri Jun 22 17:47:57 2012 +0400
+
+    ferret_proto: добавлена возможность корректно деинициализации
+    
+    ВАЖНО! в структуру FP_CONFIG добавлено поле fp_hw_remove,
+    необходимо откорректировать соответствующий код при
+    её использовании.
+    
+    при деинициализации с помощью fp_remove() будет автоматически
+    вызвана функция fp_hw_remove() заданная в FP_CONFIG, т.е.
+    специально вызывать деинициализацию нижнего уровня не следует.
+    
+    для SPI шины деинициализация была добавлена. реализация
+    проверена на переходе загрузчик-прошивка платы DIO16.
+
+commit ee339e857785edf8b29f6f016f7b8982f59060b3
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Fri Jun 22 10:14:46 2012 +0400
+
+    spi_ferret_proto: значительное изменение логики обработки RX/TX
+    
+    В данном коммите проведены значительные изменения
+    в логике обработки приема и передачи данных через
+    SPI. Разнести коммит на отдельные патчи уже не получается.
+    Все изменения были произведены в процессе кропотливой
+    отладки под нагрузкой. Среди изменений:
+    * добавлены опции для упрощения отладки (отключение
+    приема/передачи/DMA/SPI и т.п.)
+    * полностью убран VERBOSE режим
+    * ВАЖНО: понижен приоритет прерывания по CS
+    * ВАЖНО: работа по приему/передаче теперь идет по
+    восходящему фронту CS. Таким образом удалось избежать
+    необходимости следить за началом/концом приема/передачи
+    данных.
+    * исправлена выдача на вход центрального модуля
+    ненулевых данных во время приема данных с него.
+    * добавлена инкрементация соответствующих счетчиков
+    пакетов.
+
+commit abfe3f438f6afaa065ef43e9f3304ee9df90cd60
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Fri Jun 22 10:05:45 2012 +0400
+
+    spi_ferret_proto: EXT_SPI_INT должен явно инициализироваться нулем
+    
+    необходимо соблюдать низкий уровень сигнала EXT_SPI_INT
+    в начале работы прошивки, в противном случае могут
+    быть ложные срабатывания на стороне центрального
+    модуля.
+    
+    аналогичное изменение внесено и в загрузчик.
+
+commit 83cc4b7898e288097a81c1cd6d76438dfa578d96
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Fri Jun 22 10:01:34 2012 +0400
+
+    spi_ferret_proto: отключены лишние прерывания от SPI и DMA каналов
+    
+    на функциональность отключение данных прерываний
+    не влияет, но и лишними оставлять не стоит.
+    
+    дополнительно, отключена настройка приоритетов
+    DMA каналов. для текущей реализации она не требуется.
+
+commit faa1161d34ee5451844172f1ea1a24f62f41e702
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Fri Jun 22 09:44:22 2012 +0400
+
+    ferret_proto: добавлены счетчики пакетов
+    
+    в структуру struct fp_driver добавлено поле counters
+    со значениями наиболее характерных счетчиков
+    принятых/переданных данных.
+    
+    при инициализации в ferret_proto.c счетчики обнуляются.
+    
+    инкрементация счетчиков должна проводится на
+    нижнем уровне (в прослойке, отвечающей за передачу по
+    аппаратной шине), за исключением счетчика
+    принятых пакетов с ошибками CRC, который инкрементируется
+    в ferret_proto.c.
+
+commit e9afdee67fabeea6de15ae7078ff697b3ac3c3db
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Fri Jun 22 09:09:18 2012 +0400
+
+    ferret_proto: отсылка сообщения от handler'а сделана строго через task
+    
+    комментарий о проблемах с этим связанных
+    также добавлен.
+
+commit 3688eeb012c2a3ef4a53eace1b33b6ab95eed9b8
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Wed Jun 6 10:49:36 2012 +0400
+
+    spi_ferret_proto: fix receiving data in low frequency mode
+    
+    also fix compilation when VERBOSE==1
+
+commit 0f0bca97554549f7a7414d8cb8d10b082c1bd575
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Wed May 30 11:38:39 2012 +0400
+
+    ferret_proto: CRC_Init() перенесена в ferret_proto.c
+
+commit 55906afc855b2b0a0a34556fb3fc59cb19be4224
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Wed May 30 11:37:42 2012 +0400
+
+    ferret_proto: немного подправлено описание в ferret_proto.h под новую реализацию
+
+commit ca82883cd628810542cea15af4e82596c7e1bac4
+Author: Igor Bogomolov <igor_bogomolov@skitlab.ru>
+Date:   Sun May 27 14:09:43 2012 +0400
+
+    ferret_proto: исправление критических ошибок
+
+commit 076aaaa072c735d08561634567f8688d50d658da
+Author: Igor Bogomolov <igor_bogomolov@skitlab.ru>
+Date:   Wed May 23 16:05:53 2012 +0400
+
+    ferret_proto: очередное развитие протокола. Проведёт полный рефакторинг кода.
+
+commit c4e88b500658bf1edbdfd531301ed7c8cf955245
+Author: Igor Bogomolov <igor_bogomolov@skitlab.ru>
+Date:   Sat May 19 19:14:54 2012 +0400
+
+    ferret_proto: Полностью отделил ferret_proto от физической среды передачи данных.
+    spi_ferret_proto.h перенесён в include; в связи с этим изменены все .project
+    
+    За подробностями адаптации прошивки под новый API смотри
+    git show 2a70a584d3804f251e9081adfe7efb3efefb1433 в people/igor/fesw_firmware.git
+
+commit 6cc7abb9c1d2e33697ee763e920e6c12a97c4d4f
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Fri May 11 14:44:54 2012 +0400
+
+    ferret_proto: fp_template_list[] объявлена как статическая, во избежание
+
+commit ee08d13690af3cc29f5418a411caacbfbd977d69
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Fri May 11 14:43:16 2012 +0400
+
+    spi_ksz: несколько увеличена скорость чтения/записи
+    
+    как выяснилось, ioctl(), выставляющая CS работает относительно
+    долго, а используется редко. в связи с этим, в код были добавле
+    соответствующие проверки, использующие статические переменные.
+    
+    кроме того, буфер для приема/отправки сделан общим и фиксирован
+    размером на 256 байт, что необходимо учитывать при спользовании
+    функций write_bytes()/read_bytes()
+
+commit 2eea0e2665c9e7daf4a7c524ed8611b2c848813b
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Sat May 5 17:55:14 2012 +0400
+
+    ferret_proto: добавлены команды FP_CMD_GOTO_BLDR FP_CMD_BOARD_RESET FP_CMD_BLDR_SET_AUTOBOOT
+
+commit 44b8cd5eb93bceb518ff14d9e63b3e5813ef41d9
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Mon Apr 23 14:41:07 2012 +0400
+
+    ferret_proto: переделал реализацию ответа в случае долговыполняющейся предидущей команды
+    
+    необходимо обратить внимание на приоритет соответствующих задач (tasks)
+
+commit efd67f83b16756794d205dd033cdac308f10b340
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Fri Apr 13 14:23:47 2012 +0400
+
+    ferret_proto: добавил обработку состояния энергосбережения в протокол
+    
+    осуществляется оное 3мя хендлерами, которые можно (но необязательно)
+    указывать при инициализации протокола
+    
+    в состоянии энергосбережения, активность по шине будит устройство
+    
+    добавлена фиксированная команда 0x30, по приходу которой вызывается
+    функция перехода в энергосберегающее состояние
+    
+    теперь необходимо указывать таймаут PIT-таймера, использующегося
+    для отправки ответа
+
+commit 7c122b0e9b08d3ac925f57459784c4a5fcca596a
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Sun Apr 8 15:40:32 2012 +0400
+
+    ferret_proto: значительно изменено поведение при ответе на запрос
+    
+    теперь ответ производится либо сразу, если обнаружена ошибка парсинга,
+    либо через ~1мс в любом случае. если к этому моменту функция-обработчик
+    завершилась, то ответ будет разумным, в противном случае - в ответе уйдет
+    сообщение о таймауте выполнения операции
+
+commit ceb35508ad25efcd908b01327098512e5f1b4fff
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Sun Apr 8 15:38:25 2012 +0400
+
+    ferret_proto: исправлено залипание DMA при неуспевании ответить вовремя
+
+commit 84be8c6c137c083602726af08ec5494b1bad5cac
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Sun Apr 8 15:37:43 2012 +0400
+
+    ferret_proto: расширено описание в include/ferret_proto.h
+
+commit 236d3279064f494ce5e12bd53f24b61e5e13c573
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Sat Mar 31 15:16:24 2012 +0400
+
+    ferret_proto: добавлен test5 (прием любой длины, отправка одного и того же ответа)
+
+commit 11ba68868df39135a9422d6a8994368efe6fba80
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Tue Mar 27 19:59:07 2012 +0400
+
+    ferret_proto: добавил комментарий к перечислению кодов ошибок, более ранний парсинг номера устройства
+
+commit b97913bac89b266a84c8599bf896f23a52964838
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Tue Mar 27 11:30:33 2012 +0400
+
+    ferret_proto: исправлен множественный ответ в случае ошибки длины посылки. добавлена защита от бесконечного залипания в RX
+
+commit 7ebc1e15f6e435c6a156380d54e1a057c74aa68a
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Mon Mar 26 16:51:47 2012 +0400
+
+    ferret_proto: при отсутствии обработчика команды, возвращается соответствующий код ошибки
+
+commit 7b6874f8a3b6fd59f23effc853ddf9d44b821b31
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Mon Mar 26 16:49:53 2012 +0400
+
+    ferret_proto: разрешено регистрировать обработчики с id до 0x200
+
+commit bab7c8d12750b0dc0a616df167012b9bfe095856
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Sun Mar 25 16:18:31 2012 +0400
+
+    ferret_proto: перенес в реализацию протокола поддержку ответа на общие для всех устройств команды (board id и тестовые)
+
+commit 49bfbaa29beadc26132c592770eedbe831bcf922
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Sun Mar 25 15:03:24 2012 +0400
+
+    ferret_proto: исправление ошибок:
+    
+    - исправлен двойной ответ при наличии ошибки парсинга
+    - добавлен таймаут отработки DMA канала по отправке
+    - добавлена проверка на получение всех ожидаемых данных по приему
+    
+    - расширено описание в ferret_proto.h
+
+commit 6a4abac963cfa4f28b418082987c07d63fcae604
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Fri Mar 23 13:50:19 2012 +0400
+
+    альфа-вариант реализации протокола обмена данным с головным устройстом
+    
+    указания по применению см. в ferret_proto.h
+
+commit c70b252b66bdbcaf5578c2e5f59f46d08311e76c
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Fri Mar 23 13:30:08 2012 +0400
+
+    crc: модуль CRC заменен на рабочий вариант, проверено аппаратурой
+
+commit a2e1f256b48d353797bc6c379092e96e26847fc0
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Mon Mar 12 10:43:26 2012 +0400
+
+    добавлен модуль расчета CRC суммы
+    
+    - используются аппаратные возможности Kinetis
+    - исходники скопированы из проекта Processor Expert'a
+    - инструкция по использованию написана в include/crc_hw.h
+
+commit e44ee2434f289a5b0b6f7fe72ad8085c0836e6b3
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Mon Mar 5 13:18:04 2012 +0400
+
+    altera_jbc: более аккуратно реализовал обработку задержек
+    
+    точно такой же прием используется на CPU боарде в Linux драйвере
+    исправило проблему с прошивкой на VPLCIM плате
+
+commit e162919b7102f48d291340c0b8ec1d7ef081c98f
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Tue Feb 21 11:27:46 2012 +0400
+
+    spi_ksz_proto: добавил функции двух-байтовой чтения/записи
+
+commit a92232ab3776ab8cf5d36fdcde0bfc52be0ef75a
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Thu Feb 16 13:58:13 2012 +0400
+
+    add routines for handling debug UART cable insertion/removing
+    
+    usage somewhere in your code:
+    #include <duart.h>
+    void func(void)
+    { duart_init(DUART_NUM, BSP_GPIO_DUART_PWR, BSP_GPIO_DUART_PWR_MUX_GPIO); }
+    
+    where DUART_NUM, BSP_GPIO_DUART_PWR, BSP_GPIO_DUART_PWR_MUX_GPIO depends on board HW
+
+commit 6a6c5c2a79c4adc51c43029bec6b4163e79ee866
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Sun Feb 12 16:39:43 2012 +0400
+
+    bldr_config: removed default configuration via struct's default values
+    
+    doing so: struct bootloader_config config = { 0, 1 }; board's firmwares
+    will reset bootloader's settings while reflashing
+
+commit bf6527a6094ca5eff429e13ec45248018f93ee77
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Sun Feb 12 15:29:18 2012 +0400
+
+    add API to read/modify bootloader's settings
+
+commit 42d7206c90d13a0ae4602b12551ce00c595767db
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Sat Feb 4 18:11:59 2012 +0400
+
+    spi_ksz_proto: добавил в сигнатуры функций требование указать SPI's cs (chipselect)
+
+commit 5ac847d48f9c84d2604c171ca8cba0fc9fa5b9ac
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Mon Jan 30 09:23:13 2012 +0400
+
+    spi_ksz_proto: исправил запись по SPI по протоколу Micrel'а
+
+commit 1e5edb5f502136dddff04a4d9656cb5852291d35
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Mon Jan 30 09:22:45 2012 +0400
+
+    добавил поддержку FESW и VPLC IM
+
+commit 0b34792ab9f4c43eb4bb049ceb5a34c18dac5200
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Sat Jan 28 15:08:50 2012 +0400
+
+    altera_jbc: при загрузке прошивки в ПЛИС следует указывать, используется ли отладочный режим
+    
+    в отладочном режиме на stdout выводится информация о прошивке
+    требуется пересборка проектов, использующих int altera_jbc_load_fw()
+
+commit 0ca184dce0a5fcd91c9b9b6d89666b66c0b33129
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Fri Jan 27 11:42:24 2012 +0400
+
+    поправка к предыдущему коммиту
+
+commit 8a5779c157e9b6859df27c069a3cda70cbf685b5
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Fri Jan 27 11:39:47 2012 +0400
+
+    добавил проверку на наличие GPIO пинов Altera's JTAG в BSP
+
+commit 9bacd0a3a98b7c8127a9f1fd059f4b940607571e
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Fri Jan 27 11:30:09 2012 +0400
+
+    добавил проект для RSSW
+
+commit f0148504f5cfe0ebf0124270255e08ad7a4c658a
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Fri Jan 27 10:23:42 2012 +0400
+
+    множественные правки:
+    
+    * исправлена перепрошивка ПЛИС (необходимо было добавить задержку в jbi_delay())
+    * добавлены блокировки в парсинг S19 строки и функции доступа к SPI
+
+commit 8e4cb5b6805dfcf1b9fb07289f4f0dddd542c37e
+Author: Pavel Nakonechny <pavel.nakonechny@skitlab.ru>
+Date:   Thu Jan 26 19:08:14 2012 +0400
+
+    initial
