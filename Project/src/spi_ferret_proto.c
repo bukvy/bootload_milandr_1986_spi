@@ -231,3 +231,23 @@ void spi_fp_write(void)
 	fp_driver.counters.tx_packets += 1;
 	fp_driver.counters.tx_bytes += 2*fp_driver.tx_buf.packet.packet_len;
 }
+
+
+
+unsigned short ModBusCRC16(unsigned char *p, unsigned short n)
+{
+    unsigned short w, i;
+    unsigned char j;
+    for (w = 0xFFFF, i = 0; i < n; i++)
+    {
+        w ^= p[i];
+        for (j = 0; j < 8; j++) if (w & 1)
+            {
+                w >>= 1;
+                w ^= 0xA001;
+            }
+            else w >>= 1;
+    }
+    return w;
+}
+

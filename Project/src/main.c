@@ -268,10 +268,10 @@ int xyzModem_stream_open (connection_info_t * info)
         while (retries-- > 0){
           newstack=NewStackAddr;
           if ((newstack & 0x2FFF0000 ) != 0x20000000 ){retries++;}  // if there is not stack in 0x080004000 then forever
-
             counter=TimerCounter + xyzModem_CHAR_TIMEOUT;
                     	CYGACC_COMM_IF_PUTC ((xyz.crc_mode ? 'C' : NAK));
                 while ((UART_GetFlagStatus (MDR_UART2, UART_FLAG_RXFF)!= SET) && (counter > TimerCounter)) {
+                            druck_rck();
                   asm(" NOP");
                 }
                 if ((UART_GetFlagStatus (MDR_UART2, UART_FLAG_RXFF)== SET)) {

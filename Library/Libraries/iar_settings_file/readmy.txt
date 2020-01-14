@@ -1,0 +1,1 @@
+Для настройки IAR для работы и отладки (через jtag) проекта ПЛК-2000 необходимо скопировать содержимое папок debugger, devices, flashloader, linker в конфигурационную папку IAR (c:\Program Files\IAR Systems\Embedded Workbench 6.5\arm\config\).

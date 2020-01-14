@@ -597,27 +597,7 @@ void druck_rck(void)
 {
     unsigned char i=0;
     unsigned short b=0;
-/* //Room420  18.10.2019
-   Now druck rck as you say  we can do after sending buffer right into the function which send this buffer
-    as it is blocking untill sending and we can do it after that
-   
-    if (((!SSP_GetFlagStatus(MDR_SSP2, SSP_FLAG_BSY)))&&(SSP_Target==tLEDS)){
-        PORT_ResetBits(MDR_PORTF, LED_RSK_L);
-        PORT_SetBits(MDR_PORTF, LED_RSK_L);
-        SSP_Target=tNONE;
-        DMA_TX_FLAG=0;
-    }
-*/    
-/*//Room420  28.12.2019
-  
 
-    if (((!SSP_GetFlagStatus(MDR_SSP2, SSP_FLAG_BSY)))&&(SSP_Target==tDO)){
-        PORT_ResetBits(MDR_PORTE, PORT_Pin_2);
-        PORT_SetBits(MDR_PORTE, PORT_Pin_2);
-        SSP_Target=tNONE;
-        DMA_TX_FLAG=0;
-    }
-*/
     if (((!SSP_GetFlagStatus(MDR_SSP1, SSP_FLAG_BSY)))&&(ssp1_mode!=tRECV)){
         init_SPI_Mode(SSP_SPH_2Edge);
         while((SSP_GetFlagStatus(MDR_SSP1,SSP_FLAG_RNE))&&(i<100)){
@@ -626,7 +606,7 @@ void druck_rck(void)
         }
         ssp1_cnt=0;
         ssp1_mode=tRECV;
-        PORT_ResetBits(MDR_PORTD, LED_TEST);
+//        PORT_ResetBits(MDR_PORTD, LED_TEST);
     }
     
     if (((SSP_GetFlagStatus(MDR_SSP1, SSP_FLAG_RNE)))&&(ssp1_mode==tRECV)){
@@ -712,7 +692,7 @@ void main_refresh_task(void) {
    ReStore_EE();
      /* Enables the HSI clock for WWDG */
  //Room420  04.10.2019  temporarely TEMPOR1
-#define TEMPOR1
+#define TEMPOR2
 #ifdef   TEMPOR1
     WWDG_ClearFlag();
     RST_CLK_PCLKcmd(RST_CLK_PCLK_WWDG,ENABLE);
@@ -722,7 +702,7 @@ void main_refresh_task(void) {
     /* Enable WWDG and load start counter value*/
     WWDG_Enable(0x7F);
 #endif    
-    size = sizeof(cfg_params);
+
     
     for (;;) {
        module_wanted_parse();

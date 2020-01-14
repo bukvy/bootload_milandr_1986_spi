@@ -19,6 +19,9 @@
 #include "adc.h"
 #include "MDR32F9Qx_usb_handlers.h"
 
+#define BSL_UART_CONFIG
+
+
 #define BufferSize         Led_group
 #define ALL_PORTS_CLK   (RST_CLK_PCLK_PORTA | RST_CLK_PCLK_PORTB | \
                          RST_CLK_PCLK_PORTC | RST_CLK_PCLK_PORTD | \
@@ -343,8 +346,6 @@ void InitDMA_SSP2(unsigned char *buf,unsigned char cnt)
 
 void SPIConfigure(void)
 {
-  DMA_StructInit(&DMA_InitSSP2_RX);
-  DMA_StructInit(&DMA_InitSSP2_TX);
 
   PortInitStructure.PORT_Pin   = (PORT_Pin_2 );
   PortInitStructure.PORT_OE    = PORT_OE_IN;
@@ -368,23 +369,13 @@ void SPIConfigure(void)
 
   /* Reset all SSP settings */
   SSP_DeInit(MDR_SSP1);
-  SSP_DeInit(MDR_SSP2);
+
 
   SSP_BRGInit(MDR_SSP1,SSP_HCLKdiv2);
-  SSP_BRGInit(MDR_SSP2,SSP_HCLKdiv2);
+
 
   /* SSP2 MASTER configuration ------------------------------------------------*/
   SSP_StructInit (&sSSP);
-
-  sSSP.SSP_SCR  = 1;
-  sSSP.SSP_CPSDVSR = 10;
-  sSSP.SSP_Mode = SSP_ModeMaster;
-  sSSP.SSP_WordLength = SSP_WordLength8b;
-  sSSP.SSP_SPH = SSP_SPH_1Edge;  //Room420  23.10.2019       SSP_SPH_1Edge;
-  sSSP.SSP_SPO = SSP_SPO_High;   //SSP_SPO_High;// SSP_SPO_Low;//Room420  23.10.2019 SSP_SPO_High;
-  sSSP.SSP_FRF =  SSP_FRF_SPI_Motorola; //Room420 was  working with LED   //SSP_FRF_SSI_TI;
-  sSSP.SSP_HardwareFlowControl = SSP_HardwareFlowControl_SSE;//Room420  23.10.2019 SSP_HardwareFlowControl_SSE;
-  SSP_Init (MDR_SSP2,&sSSP);
 
   /* SSP1 SLAVE configuration ------------------------------------------------*/
   sSSP.SSP_SPH = SSP_SPH_2Edge;
@@ -395,10 +386,33 @@ void SPIConfigure(void)
   sSSP.SSP_Mode = SSP_ModeSlave;
   SSP_Init (MDR_SSP1,&sSSP);
  
+  /* Enable SSP1 */
+  SSP_Cmd(MDR_SSP1, ENABLE);  
   
+//  Это из проекта где используется SSP2 для светодиодов и EEPROM
+
+#ifndef BSL_UART_CONFIG 
+ 
   /* SSP2 Interrupt ------------------------------------------------*/ 
 //Room420  23.10.2019  SSP_ITConfig(MDR_SSP2,SSP_IT_RX,ENABLE);  // DISABLE as it is not need for SSP2
+
+  DMA_StructInit(&DMA_InitSSP2_RX);
+  DMA_StructInit(&DMA_InitSSP2_TX);
+
+  
+  SSP_DeInit(MDR_SSP2);
   SSP_ITConfig(MDR_SSP2,SSP_IT_RX,DISABLE);
+  sSSP.SSP_SCR  = 1;
+  sSSP.SSP_CPSDVSR = 10;
+  sSSP.SSP_Mode = SSP_ModeMaster;
+  sSSP.SSP_WordLength = SSP_WordLength8b;
+  sSSP.SSP_SPH = SSP_SPH_1Edge;  //Room420  23.10.2019       SSP_SPH_1Edge;
+  sSSP.SSP_SPO = SSP_SPO_High;   //SSP_SPO_High;// SSP_SPO_Low;//Room420  23.10.2019 SSP_SPO_High;
+  sSSP.SSP_FRF =  SSP_FRF_SPI_Motorola; //Room420 was  working with LED   //SSP_FRF_SSI_TI;
+  sSSP.SSP_HardwareFlowControl = SSP_HardwareFlowControl_SSE;//Room420  23.10.2019 SSP_HardwareFlowControl_SSE;
+  SSP_Init (MDR_SSP2,&sSSP);
+  
+  
   //Room420  23.10.2019 NVIC_ClearPendingIRQ(SSP2_IRQn);//Room420  23.10.2019
 //Room420  23.10.2019 NVIC_EnableIRQ(SSP2_IRQn);  //Room420  23.10.2019 
   
@@ -408,17 +422,19 @@ void SPIConfigure(void)
   
   /* Enable SSP1 DMA Rx and Tx request */
   SSP_DMACmd(MDR_SSP1,(SSP_DMA_TXE), ENABLE);
+
+
   /* Enable SSP2 DMA Rx and Tx request */
-  
+  SSP_BRGInit(MDR_SSP2,SSP_HCLKdiv2);  
 //Room420  23.10.2019  SSP_DMACmd(MDR_SSP2,(SSP_DMA_RXE | SSP_DMA_TXE), ENABLE);
+  
+  
   SSP_DMACmd(MDR_SSP2,(SSP_DMA_TXE), ENABLE);
   
   InitDMA_SSP2(Led_Buf,Led_group);
-    
-  /* Enable SSP1 */
-  SSP_Cmd(MDR_SSP1, ENABLE);
   /* Enable SSP2 */
   SSP_Cmd(MDR_SSP2, ENABLE);
+#endif
 }
 
 void init_SPI_Mode(unsigned short mode)
@@ -458,7 +474,7 @@ void UARTConfigure(void)
 {
   
   
-#define BSL_UART_CONFIG
+
 #ifdef BSL_UART_CONFIG 
   PortInitStructure.PORT_OE = PORT_OE_OUT;
   PortInitStructure.PORT_FUNC = PORT_FUNC_ALTER;
@@ -741,8 +757,7 @@ void System_Init(void)
   UARTConfigure();
  
   Init_UART2();
-
- 
+  
   fp_init();
   mod_fp_init();
   
