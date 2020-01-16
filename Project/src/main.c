@@ -47,6 +47,26 @@
 #define xyzModem_close 1
 #define xyzModem_abort 2
 
+void bldr_set_autoboot(uint16_t autoboot);
+
+typedef struct _bootloader_config {
+	uint16_t crc;
+//	uint16_t timeout;    Remove timeout as never saw where it is used   Room420
+	uint16_t autoboot;
+
+} bootloader_config;
+
+
+
+bootloader_config  bldr_config;
+
+
+
+
+
+
+
+
 
 
 typedef struct {
@@ -126,11 +146,14 @@ void sleep(int id);
 */
 __ramfunc  int Erase(void);
 __ramfunc  int Program(void);
+__ramfunc  int Program_cfg(void);
 __ramfunc void sleep(int id);
 
 
 //========== That is address where to we put main programm Koval ======================
-uint32_t programadr=0x08004000;
+uint32_t programadr=0x08006000;
+uint32_t programadr_cfg=0x08005000;  // that is addres for programmin of btldr_cfg structure  
+
 void testfunc(void); // for putting of start of next programm
 
 
@@ -219,7 +242,9 @@ void CYGACC_COMM_IF_PUTC(char y)   // here x I don't know what for from original
   void main(void)
 {
   System_Init();
+  int res;
 unsigned char ReciveByte;
+bldr_set_autoboot(1);
 int size=loadx_bin(0x08001000);
 
   while (1){
@@ -623,7 +648,7 @@ unsigned int i,i1,i2,eraddr;
 
 //	for (i1=0x08003000;i1<0x08010000;i1+=4096)   // this is a pagenumber bits 16:12 in all 32 pages we start from 4th page (0x8004000)
 //	{
-         for(i2=0; i2 < 16; i2+=4){  // that is sector A,B,C,D
+         for(i2=0; i2 < 16; i2+=4){  // that is sector A,B,C,D   
 
                 eraddr=programadr + i2;
 		EEPROM_ADR = eraddr;
@@ -734,12 +759,109 @@ unsigned int i1,i3=0,i2=0,a1,a2;
         return 0;
 }
 
+//===========================   That is for   readin and flashin bldr_cfg =========
+//====================================================================================
 
 
 
+void bldr_set_autoboot(uint16_t autoboot)
+{
+int res;
+	bldr_config.autoboot = autoboot;
+//	cfg_copy.timeout  = 0;// room420 was bldr_config.timeout;
+//	bldr_config.crc = cyg_crc16((uint8_t *)&cfg_copy)[2], sizeof(bldr_config)-2);
+	bldr_config.crc = cyg_crc16((uint8_t *)&bldr_config.autoboot, 2);
+
+        
+                        __disable_interrupt();
+                 res=  Program_cfg();
+                  __enable_interrupt();
+        
+asm(" NOP");
+        
+}
+
+uint16_t bldr_get_autoboot(void)
+{
+ // 	crc = CRC_Cal_16(&((uint8_t *)&bldr_config)[2], sizeof(bldr_config)-2);
+uint16_t crc;	
+	if (bldr_config.crc != crc) {
+		/* set default values */
+		bldr_set_autoboot(1);
+  
+	return bldr_config.autoboot;
+}
+}
+
+__ramfunc  int Program_cfg(void)
+{
+unsigned int i1,i3=0,i2=0,a1,a2;
+uint32_t *programcheck_cfg;
+programcheck_cfg=(uint32_t*)programadr_cfg;
+uint32_t data; // For testing ,xxeeadr,xxeedata,xxeekey;
+//================= first  erase this block of memory============
+	EEPROM_CMD |= CON;
+        EEPROM_CMD |= CON;
+	EEPROM_KEY = 0x8AAA5551;
+
+	EEPROM_CMD &= ~(XE|YE|SE|MAS1|ERASE|NVSTR|IFREN);
+
+        EEPROM_ADR = programadr_cfg;   // 0x8005000  equal 5000 that is number of page sector A =0
+		EEPROM_DI = 0;
+		EEPROM_CMD |= WR;  // NEW     EEPROM_CMD = 0x0003;
+		EEPROM_CMD &= ~WR;  // NEW
+
+		EEPROM_CMD |= XE|ERASE;  //EEPROM_CMD = 0x0441;
+		sleep(50);// 6us
+		EEPROM_CMD |= NVSTR;  //EEPROM_CMD = 0x2441;
+		sleep(400000);// 50ms
+		EEPROM_CMD &= ~ERASE;   //EEPROM_CMD = 0x2041;
+		sleep(400);// 5us
+		EEPROM_CMD &= ~(XE|NVSTR);
+		sleep(10);// 2us
+
+
+        EEPROM_CMD &= ~(XE|YE|SE|MAS1|ERASE|NVSTR|PROG|IFREN);
 
 
 
+//=========================   next program ========================
+
+//	MDR_EEPROM->KEY = 0x8AAA5551;       
+//	EEPROM_CMD |= CON;
+
+                data=bldr_config.autoboot  | (bldr_config.crc<< 16)  ;
+
+		MDR_EEPROM->ADR = programadr_cfg ;
+
+                EEPROM_DI=data;
+
+		EEPROM_CMD |= XE|PROG;
+		sleep(100);// 5us
+		EEPROM_CMD |= NVSTR;
+		sleep(220);// 11us
+
+			EEPROM_CMD |= YE;
+			sleep(1000);// 50us
+			EEPROM_CMD &= ~YE;
+			sleep(10);// 20ns
+		EEPROM_CMD &= ~PROG;
+	   	sleep(120);// 6us
+		EEPROM_CMD &= ~(XE|NVSTR);
+	   	sleep(20);// 1us
+          EEPROM_CMD &= ~CON;
+ //--------------  now check what we flashed---------
+         sleep(100);
+
+          if (data==*programcheck_cfg){
+            asm (" NOP");
+             return 0;
+
+          } else {
+            asm (" NOP");
+          return 1; // error
+          }
+}
 
 
 

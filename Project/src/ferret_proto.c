@@ -593,8 +593,12 @@ enum fp_error fp_common_handler(uint16_t cmd, uint8_t *cmd_data, uint16_t cmd_le
 		break;
 	}
 
-	case FP_CMD_GOTO_BLDR: {
-
+	case FP_CMD_GOTO_BLDR: {   // Here I did not understand what todo may be reset Room420
+		uint32_t tmp;
+		_time_delay(2);
+		bldr_set_autoboot(0);
+		*ack_len = 0;
+		ret = FP_ERR_SUCCESS;
 		break;
 	}
 
@@ -610,10 +614,20 @@ enum fp_error fp_common_handler(uint16_t cmd, uint8_t *cmd_data, uint16_t cmd_le
 		break;
 	}
 
-	case FP_CMD_BLDR_SET_AUTOBOOT: {
 
+
+	case FP_CMD_BLDR_SET_AUTOBOOT: {
+		uint8_t t = *(uint8_t *)(cmd_data+0);
+		_time_delay(2);
+		bldr_set_autoboot(t);
+		*ack_len = 0;
+		ret = FP_ERR_SUCCESS;
 		break;
 	}
+        
+        
+        
+      
 
 	case FP_CMD_GOTO_LOWPOWER: {
 		/*

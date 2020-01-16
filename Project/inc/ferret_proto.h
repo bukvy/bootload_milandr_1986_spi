@@ -245,4 +245,5 @@ int fp_register_handler(uint16_t cmd, FP_HANDLER handler);
 void fp_send(void);
 int fp_get_module_num(void);
 extern FP_DRIVER fp_driver;
+void bldr_set_autoboot(uint16_t autoboot);
 #endif /* FERRET_PROTO_H_ */
