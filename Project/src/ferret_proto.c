@@ -616,7 +616,7 @@ enum fp_error fp_common_handler(uint16_t cmd, uint8_t *cmd_data, uint16_t cmd_le
 
 
 
-	case FP_CMD_BLDR_SET_AUTOBOOT: {
+	case FP_CMD_BLDR_SET_AUTOBOOT: {  // after command fw_update board 5 /lib/firmware/dio16_firmware_v13.afx.S19  goes here first then FP_CMD_BOARD_RESET:
 		uint8_t t = *(uint8_t *)(cmd_data+0);
 		_time_delay(2);
 		bldr_set_autoboot(t);

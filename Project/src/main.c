@@ -244,7 +244,7 @@ void CYGACC_COMM_IF_PUTC(char y)   // here x I don't know what for from original
   System_Init();
   int res;
 unsigned char ReciveByte;
-bldr_set_autoboot(1);
+//bldr_set_autoboot(1);
 int size=loadx_bin(0x08001000);
 
   while (1){
