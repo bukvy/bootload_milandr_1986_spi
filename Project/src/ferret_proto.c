@@ -15,6 +15,7 @@
 #include "spi_ferret_proto.h"
 #include "crc_hw.h"
 #include "string.h"
+#include "main.h"
 
 /*****************************************************************************/
 /* Custom definitions                                                        */
@@ -112,7 +113,7 @@ void fp_init(void)
 
   fp_register_common_messages();
 
-  fp_driver.config.board_id=0x0D48;
+  fp_driver.config.board_id=0x8D48; //0x0D48;
   fp_driver.config.board_hw_vers=0x1201;
   fp_driver.config.board_pof_vers=0x0062;
   fp_driver.config.board_sw_vers=0x0003;
@@ -468,18 +469,62 @@ struct fp_ack_board_info {
 #define FP_CMD_BOARD_RESET 			0x16
 #define FP_CMD_BLDR_SET_AUTOBOOT	0x17
 
+
+#define CMD_FLASH_PREPEARE 	0x20
+#define CMD_FLASH_S19_BLOCK	0x21
+#define CMD_FLASH_S19_BLOCK_STATUS 0x22
+
+
 #define FP_CMD_GOTO_LOWPOWER 0x40
 
 enum fp_error fp_common_handler(uint16_t cmd, uint8_t *cmd_data, uint16_t cmd_len,
 		uint8_t *ack_data, uint16_t *ack_len)
 {
 	enum fp_error ret;
+        int err = 0, i = 0;
+	static uint8_t flash_s19_status = 0;
 
 #if FP_VERBOSE
 	printf("%s: cmd: %d\n", __func__, cmd);
 #endif
-
 	switch (cmd) {
+          
+
+		case CMD_FLASH_S19_BLOCK: {	// 33
+			uint16_t res = *(uint16_t *)(cmd_data);
+			uint8_t* buf = cmd_data+2;
+	
+			_time_delay(2);
+			
+	//		err = burn_s19_line(buf);									
+			
+			if (err != 0) 
+					{	flash_s19_status = 1;	} 
+			else 	{	flash_s19_status = 0;	}
+	
+			*ack_len = 0;
+			ret = FP_ERR_SUCCESS;
+			break;
+		}
+		case CMD_FLASH_S19_BLOCK_STATUS: {	// 34
+			*(uint8_t *)&ack_data[0] = flash_s19_status;
+			*ack_len = 1;
+			ret = FP_ERR_SUCCESS;
+			break;
+		}
+		case CMD_FLASH_PREPEARE: {
+			_time_delay(2);
+	
+			*ack_len = 0;
+			ret = FP_ERR_SUCCESS;
+			break;
+		}
+
+          
+          
+          
+          
+          
 	case FP_CMD_TEST_DATA1: {
 		struct fp_cmd_test1 *cmd;
 		struct fp_ack_test1 *ack;
@@ -593,7 +638,11 @@ enum fp_error fp_common_handler(uint16_t cmd, uint8_t *cmd_data, uint16_t cmd_le
 		break;
 	}
 
-	case FP_CMD_GOTO_BLDR: {   // Here I did not understand what todo may be reset Room420
+	case FP_CMD_GOTO_BLDR: {   // Here I did not understand what todo may be reset Room420   Here it is useless as this programm alredy
+          // is bottloader so you never need to go, you already in here
+          // I think that function should be  in main programm because if you are here you alredy are ready for bootloading 
+          //or else what on hell you are doing here  This function put here Room420 and that is useless
+
 		uint32_t tmp;
 		_time_delay(2);
 		bldr_set_autoboot(0);
@@ -608,6 +657,7 @@ enum fp_error fp_common_handler(uint16_t cmd, uint8_t *cmd_data, uint16_t cmd_le
 		//tmp = SCB_AIRCR; /* see http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.dui0553a/Cihehdge.html */
 		tmp &= 0x00008700;
 		tmp |= 0x05FA0004;
+              
 		//SCB_AIRCR = tmp;
 		*ack_len = 0;
 		ret = FP_ERR_SUCCESS;
@@ -617,9 +667,12 @@ enum fp_error fp_common_handler(uint16_t cmd, uint8_t *cmd_data, uint16_t cmd_le
 
 
 	case FP_CMD_BLDR_SET_AUTOBOOT: {  // after command fw_update board 5 /lib/firmware/dio16_firmware_v13.afx.S19  goes here first then FP_CMD_BOARD_RESET:
+                // I think that function should be  in main programm because if you are here you alredy are ready for bootloading 
+                //or else what on hell you are doing here  This function put here Room420 and that is useless
 		uint8_t t = *(uint8_t *)(cmd_data+0);
 		_time_delay(2);
 		bldr_set_autoboot(t);
+//                bldr_config.autoboot = 3; // Room420  if 0 then goto xmodem after reset if 3 then go to xmodem from here 
 		*ack_len = 0;
 		ret = FP_ERR_SUCCESS;
 		break;
@@ -671,6 +724,10 @@ static void fp_register_common_messages(void)
 	fp_register_handler(FP_CMD_BLDR_SET_AUTOBOOT, fp_common_handler);
 
 	fp_register_handler(FP_CMD_GOTO_LOWPOWER, fp_common_handler);
+
+	fp_register_handler(CMD_FLASH_S19_BLOCK, fp_common_handler);
+	fp_register_handler(CMD_FLASH_S19_BLOCK_STATUS, fp_common_handler);
+	fp_register_handler(CMD_FLASH_PREPEARE, fp_common_handler);
 }
 
 void fp_get_driver(FP_DRIVER *drv)

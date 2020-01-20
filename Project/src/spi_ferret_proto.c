@@ -64,7 +64,7 @@ static void spi_fp_dma_setup_tx(uint32_t size)
 
 uint8_t check_is_read_now(void)
 {
-// Koval this pin is for strobe on shift registers of tDO	return !PORT_ReadInputDataBit(MDR_PORTE, PORT_Pin_3);
+// Room420 this pin is for strobe on shift registers of tDO	return !PORT_ReadInputDataBit(MDR_PORTE, PORT_Pin_3);
 }
 
 /*

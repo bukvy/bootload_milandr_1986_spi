@@ -25,7 +25,8 @@
 #include "Serial.h"
 #include <MDR32F9Qx_it.h>
 #include "main.h";
-
+#include "MDR32F9Qx_ssp.h"
+#include "MDR32F9Qx_port.h"
 
 
 
@@ -49,12 +50,7 @@
 
 void bldr_set_autoboot(uint16_t autoboot);
 
-typedef struct _bootloader_config {
-	uint16_t crc;
-//	uint16_t timeout;    Remove timeout as never saw where it is used   Room420
-	uint16_t autoboot;
 
-} bootloader_config;
 
 
 
@@ -220,8 +216,11 @@ typedef int cyg_int32;
 /* функция чтения 1 байта с таймаутом */
 int CYGACC_COMM_IF_GETC_TIMEOUT(char *c)
 {
+  uint16_t b;
 	unsigned long counter = TimerCounter + xyzModem_CHAR_TIMEOUT;  // about 2 seconds
+        if (bldr_config.autoboot != 3){
 	while ((UART_GetFlagStatus (MDR_UART2, UART_FLAG_RXFF)!= SET) && (counter > TimerCounter)) {
+                                    druck_rck(); 
         asm (" NOP");
 	}
 	if (UART_GetFlagStatus (MDR_UART2, UART_FLAG_RXFF)== SET) {
@@ -229,11 +228,38 @@ int CYGACC_COMM_IF_GETC_TIMEOUT(char *c)
 		return 1;
 	}
 	return 0;
+        }else {   // that is launch xyz modem on SPI channel for getting and setting of new firmware 
+          
+         while((SSP_GetFlagStatus(MDR_SSP1,SSP_FLAG_RNE)==RESET)&& (counter > TimerCounter)){
+         }
+         if (SSP_GetFlagStatus(MDR_SSP1,SSP_FLAG_RNE)==SET){
+            b=SSP_ReceiveData(MDR_SSP1);
+            b ^= 0xFFFF;
+            b &=0x00FF;
+            *c=(uint8_t)(b);
+            return 1;
+        }
+         return 0;
+          
+        }
 }
 
 void CYGACC_COMM_IF_PUTC(char y)   // here x I don't know what for from original project Koval
 {
+  if(bldr_config.autoboot == 3){  // here bootload throug SPI
+    uint16_t dma_buf_spi[2];
+    dma_buf_spi[0]=(uint16_t)(y);
+    dma_buf_spi[1]=(uint16_t)(y);
+  InitDMA_SSP1_tx((unsigned char*)&dma_buf_spi,2);   //packet_len + 1
+//spi_fp_dma_setup_tx(fp_driver.tx_buf.packet.packet_len + 1);
+
+  while (PORT_ReadInputDataBit(MDR_PORTF, PORT_Pin_2) == Bit_RESET) {}
+  PORT_ResetBits(MDR_PORTB, PORT_Pin_5);
+  PORT_SetBits(MDR_PORTB, PORT_Pin_5);
+    
+  }else{
 	      UART_SendData (MDR_UART2,y);
+  }
 }
 
 
@@ -270,6 +296,7 @@ int size=loadx_bin(0x08001000);
 
 int xyzModem_stream_open (connection_info_t * info)
 {
+        char c;
 	int stat = 0;
 	int retries = xyzModem_MAX_RETRIES ;
 	int crc_retries = xyzModem_MAX_RETRIES_WITH_CRC;
@@ -293,6 +320,7 @@ int xyzModem_stream_open (connection_info_t * info)
         while (retries-- > 0){
           newstack=NewStackAddr;
           if ((newstack & 0x2FFF0000 ) != 0x20000000 ){retries++;}  // if there is not stack in 0x080004000 then forever
+/*          change this block on CYGACC_COMM_IF_GETC_TIMEOUT  room420
             counter=TimerCounter + xyzModem_CHAR_TIMEOUT;
                     	CYGACC_COMM_IF_PUTC ((xyz.crc_mode ? 'C' : NAK));
                 while ((UART_GetFlagStatus (MDR_UART2, UART_FLAG_RXFF)!= SET) && (counter > TimerCounter)) {
@@ -305,6 +333,14 @@ int xyzModem_stream_open (connection_info_t * info)
                 }
         }
 		return 1;
+          */
+          
+          if (CYGACC_COMM_IF_GETC_TIMEOUT(&c)){
+           xyz.next_blk = 1; 
+             return 0 ;
+          }
+        }        
+          return 1;
 }
 
 //#########################################################
