@@ -886,7 +886,7 @@ uint32_t data; // For testing ,xxeeadr,xxeedata,xxeekey;
 		EEPROM_CMD &= ~(XE|NVSTR);
 	   	sleep(20);// 1us
           EEPROM_CMD &= ~CON;
- //--------------  now check what we flashed---------
+ //--------------  now check what we have flashed---------
          sleep(100);
 
           if (data==*programcheck_cfg){
@@ -900,6 +900,52 @@ uint32_t data; // For testing ,xxeeadr,xxeedata,xxeekey;
 }
 
 
+
+
+
+__ramfunc  int Program_block(uint32_t address,uint32_t* buffer,uint8_t length)
+{
+uint8_t i1;
+uint32_t fl_addr_res;
+uint32_t *buffer_to_flash;
+uint32_t *address_check;
+buffer_to_flash=buffer;
+uint32_t data; // For testing ,xxeeadr,xxeedata,xxeekey;
+fl_addr_res=address;
+for(i1 =0; i1 <= (length/4); i1++){
+                data=*buffer_to_flash;
+        MDR_EEPROM->ADR = fl_addr_res ;
+
+                EEPROM_DI=data;
+
+		EEPROM_CMD |= XE|PROG;
+		sleep(100);// 5us
+		EEPROM_CMD |= NVSTR;
+		sleep(220);// 11us
+
+			EEPROM_CMD |= YE;
+			sleep(1000);// 50us
+			EEPROM_CMD &= ~YE;
+			sleep(10);// 20ns
+		EEPROM_CMD &= ~PROG;
+	   	sleep(120);// 6us
+		EEPROM_CMD &= ~(XE|NVSTR);
+	   	sleep(20);// 1us
+          EEPROM_CMD &= ~CON;
+ //--------------  now check what we flashed---------
+         sleep(100);
+         address_check=(uint32_t*)(fl_addr_res);
+         if (data== *address_check){
+            asm (" NOP");
+            fl_addr_res+=4;
+            buffer_to_flash++;
+          } else {
+            return 1;
+          }
+
+}
+         return 0;
+}
 
 
 

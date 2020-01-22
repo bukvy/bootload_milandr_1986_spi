@@ -1954,6 +1954,9 @@
       <name>$PROJ_DIR$\..\..\src\module.c</name>
     </file>
     <file>
+      <name>$PROJ_DIR$\..\..\src\s19.c</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\..\..\src\serial.c</name>
     </file>
     <file>

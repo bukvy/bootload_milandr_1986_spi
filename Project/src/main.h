@@ -1,3 +1,4 @@
+#include "config.h"
 extern void testfunc(void);
 typedef struct _bootloader_config {
 	uint16_t crc;
@@ -9,4 +10,6 @@ typedef struct _bootloader_config {
 
 
 extern bootloader_config  bldr_config;
+extern int Program_block(uint32_t address,uint32_t* buffer,uint8_t length);
+extern int Erase(void);
 
