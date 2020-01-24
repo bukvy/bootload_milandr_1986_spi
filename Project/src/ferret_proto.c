@@ -514,7 +514,10 @@ enum fp_error fp_common_handler(uint16_t cmd, uint8_t *cmd_data, uint16_t cmd_le
 		}
 		case CMD_FLASH_PREPEARE: {
 			_time_delay(2);
+                       __disable_interrupt();
                         Erase();
+                       __enable_interrupt();
+                        
 			*ack_len = 0;
 			ret = FP_ERR_SUCCESS;
 			break;

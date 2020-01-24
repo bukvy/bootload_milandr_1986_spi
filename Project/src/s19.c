@@ -187,12 +187,14 @@ int burn_s19_line(uint8_t *Line)
 		if (write(flash_file, (uint32_t*)buffer_to_flash, i) != i) */
         fl_addr_res=S19Address;
 //=======================  now programm flash =============================
-        
+                                __disable_interrupt();
     if(Program_block(S19Address,(uint32_t*)(buffer_to_flash),i) !=0){
             asm (" NOP");
+                                    __enable_interrupt();
 	    	res_burn_s19_line = (uint32_t) i;
 			goto err_unlock;
 		}
+                                        __enable_interrupt();
 //room420 no need		ioctl(flash_file, FLASH_IOCTL_FLUSH_BUFFER, NULL);
 		break;
     case '7':
