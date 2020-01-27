@@ -55,7 +55,7 @@ void bldr_set_autoboot(uint16_t autoboot);
 
 
 bootloader_config  bldr_config;
-
+bootloader_config* p_bldr_config;
 
 
 
@@ -124,7 +124,7 @@ char xmodemBuf[XMODEM_BUF_SIZE];
 #define EEPROM_DI	(*(volatile unsigned long *) 0x40018008)
 #define EEPROM_DO	(*(volatile unsigned long *) 0x4001800C)
 #define EEPROM_KEY	(*(volatile unsigned long *) 0x40018010)
-#define NewStackAddr        (*(volatile unsigned long *) 0x08004000)
+#define NewStackAddr        (*(volatile unsigned long *) 0x08006000)
 
 #define NVSTR	0x2000
 #define PROG	0x1000
@@ -213,12 +213,13 @@ uint16_t cyg_crc16(unsigned char *buf, int len)
 
 typedef int cyg_int32;
 
-/* функция чтения 1 байта с таймаутом */
+/* функция чтения 1 байта с таймаутом  или через UART или SPI */
 int CYGACC_COMM_IF_GETC_TIMEOUT(char *c)
 {
   uint16_t b;
 	unsigned long counter = TimerCounter + xyzModem_CHAR_TIMEOUT;  // about 2 seconds
-        if (bldr_config.autoboot != 3){
+
+       
 	while ((UART_GetFlagStatus (MDR_UART2, UART_FLAG_RXFF)!= SET) && (counter > TimerCounter)) {
                                     druck_rck(); 
         asm (" NOP");
@@ -228,20 +229,7 @@ int CYGACC_COMM_IF_GETC_TIMEOUT(char *c)
 		return 1;
 	}
 	return 0;
-        }else {   // that is launch xyz modem on SPI channel for getting and setting of new firmware 
-          
-         while((SSP_GetFlagStatus(MDR_SSP1,SSP_FLAG_RNE)==RESET)&& (counter > TimerCounter)){
-         }
-         if (SSP_GetFlagStatus(MDR_SSP1,SSP_FLAG_RNE)==SET){
-            b=SSP_ReceiveData(MDR_SSP1);
-            b ^= 0xFFFF;
-            b &=0x00FF;
-            *c=(uint8_t)(b);
-            return 1;
-        }
-         return 0;
-          
-        }
+
 }
 
 void CYGACC_COMM_IF_PUTC(char y)   // here x I don't know what for from original project Koval
@@ -270,8 +258,16 @@ void CYGACC_COMM_IF_PUTC(char y)   // here x I don't know what for from original
   System_Init();
   int res;
 unsigned char ReciveByte;
+unsigned char* p_programadr_cfg;
+
+p_programadr_cfg=(unsigned char*)(programadr_cfg);
+
+memcpy((unsigned char*)p_bldr_config,p_programadr_cfg,4);
+bldr_config.autoboot=p_bldr_config->autoboot;
+bldr_config.crc=p_bldr_config->crc;
+
 //bldr_set_autoboot(1);
-int size=loadx_bin(0x08001000);
+int size=loadx_bin(0x08001000);  // 0x08001000 This address is not used  Room420
 
   while (1){
 
@@ -314,12 +310,12 @@ int xyzModem_stream_open (connection_info_t * info)
 	xyz.total_STX = 0;
 	xyz.total_CAN = 0;
 //====== Отсылка сообщения о том , что будет расширенный CRC Koval  Зацикливанеи , если
-//  по адресу 0x08004000 нет в старшем сегменте адреса установки стека  (0х20000) если есть
+//  по адресу 0x08006000 нет в старшем сегменте адреса установки стека  (0х20000) если есть
 // то после 10 попыток переходит на выполнение программы с 0х08004000 ( учтите что по этому адресу
 // находится адрес стека а программа начинается с 0х08004004
         while (retries-- > 0){
           newstack=NewStackAddr;
-          if ((newstack & 0x2FFF0000 ) != 0x20000000 ){retries++;}  // if there is not stack in 0x080004000 then forever
+          if ((newstack & 0x2FFF0000 ) != 0x20000000 ){retries++;}  // if there is not stack in 0x080006000 then forever
 /*          change this block on CYGACC_COMM_IF_GETC_TIMEOUT  room420
             counter=TimerCounter + xyzModem_CHAR_TIMEOUT;
                     	CYGACC_COMM_IF_PUTC ((xyz.crc_mode ? 'C' : NAK));
@@ -912,7 +908,10 @@ uint32_t *address_check;
 buffer_to_flash=buffer;
 uint32_t data; // For testing ,xxeeadr,xxeedata,xxeekey;
 fl_addr_res=address;
-for(i1 =0; i1 <= (length/4); i1++){
+        EEPROM_CMD |= CON;
+	EEPROM_KEY = 0x8AAA5551;
+
+for(i1 =0; i1 < (length/4); i1++){
                 data=*buffer_to_flash;
         MDR_EEPROM->ADR = fl_addr_res ;
 
@@ -931,13 +930,21 @@ for(i1 =0; i1 <= (length/4); i1++){
 	   	sleep(120);// 6us
 		EEPROM_CMD &= ~(XE|NVSTR);
 	   	sleep(20);// 1us
+                         sleep(100);
+          fl_addr_res+=4;
+            buffer_to_flash++;
+                          
+}                
           EEPROM_CMD &= ~CON;
  //--------------  now check what we flashed---------
          sleep(100);
-         address_check=(uint32_t*)(fl_addr_res);
+        address_check=(uint32_t*)(address);
+        buffer_to_flash=buffer;                  
+for(i1 =0; i1 < (length/4); i1++){         
+        data=*buffer_to_flash;
          if (data== *address_check){
             asm (" NOP");
-            fl_addr_res+=4;
+            address_check+=1;
             buffer_to_flash++;
           } else {
             return 1;

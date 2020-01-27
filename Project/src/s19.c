@@ -45,7 +45,7 @@ static uint8_t GetSpair(uint8_t *arr, uint8_t point, int *res)
     /* Body */
     uint8_t ch;
     uint8_t upper,lower;
-    
+    *res=0;
     ch = arr[point];
     upper = (uint8_t)(GetHexValue(ch));
     
@@ -243,7 +243,7 @@ int burn_s19_line(uint8_t *Line)
     return 0;
     
 err_unlock:
-	return -1;
+	return res_burn_s19_line;
 }
 
 

@@ -499,8 +499,12 @@ enum fp_error fp_common_handler(uint16_t cmd, uint8_t *cmd_data, uint16_t cmd_le
 			err = burn_s19_line(buf);									
 			
 			if (err != 0) 
-					{	flash_s19_status = 1;	} 
-			else 	{	flash_s19_status = 0;	}
+					{	
+                                          flash_s19_status = 1;	
+                                        } 
+			else 	{	
+                          flash_s19_status = 0;	
+                        }
 	
 			*ack_len = 0;
 			ret = FP_ERR_SUCCESS;
@@ -675,7 +679,6 @@ enum fp_error fp_common_handler(uint16_t cmd, uint8_t *cmd_data, uint16_t cmd_le
 		uint8_t t = *(uint8_t *)(cmd_data+0);
 		_time_delay(2);
 		bldr_set_autoboot(t);
-//                bldr_config.autoboot = 3; // Room420  if 0 then goto xmodem after reset if 3 then go to xmodem from here 
 		*ack_len = 0;
 		ret = FP_ERR_SUCCESS;
 		break;
