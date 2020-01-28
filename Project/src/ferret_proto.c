@@ -505,7 +505,10 @@ enum fp_error fp_common_handler(uint16_t cmd, uint8_t *cmd_data, uint16_t cmd_le
 			else 	{	
                           flash_s19_status = 0;	
                         }
-	
+
+                            global_retries=xyzModem_MAX_RETRIES;  // For not to go to main programm
+
+                        
 			*ack_len = 0;
 			ret = FP_ERR_SUCCESS;
 			break;
@@ -519,7 +522,7 @@ enum fp_error fp_common_handler(uint16_t cmd, uint8_t *cmd_data, uint16_t cmd_le
 		case CMD_FLASH_PREPEARE: {
 			_time_delay(2);
                        __disable_interrupt();
-                        Erase();
+                        Erase_many_blocks();
                        __enable_interrupt();
                         
 			*ack_len = 0;
@@ -660,14 +663,22 @@ enum fp_error fp_common_handler(uint16_t cmd, uint8_t *cmd_data, uint16_t cmd_le
 
 	case FP_CMD_BOARD_RESET: {
 		uint32_t tmp;
+                uint32_t  newstack;
 		_time_delay(4);
-		//tmp = SCB_AIRCR; /* see http://infocenter.arm.com/help/index.jsp?topic=/com.arm.doc.dui0553a/Cihehdge.html */
-		tmp &= 0x00008700;
-		tmp |= 0x05FA0004;
-              
-		//SCB_AIRCR = tmp;
-		*ack_len = 0;
-		ret = FP_ERR_SUCCESS;
+                __disable_interrupt();
+               __disable_interrupt();
+              WWDG_ClearFlag();
+              RST_CLK_PCLKcmd(RST_CLK_PCLK_WWDG,ENABLE);
+              /* Set WWDG Prescaler value*/
+              WWDG_ClearFlag();
+               MDR_WWDG->CFR=0x03; //  EWI=0 WGTB=0 W=3  to reset as soon as possible WWDG_SetPrescaler(WWDG_Prescaler_2);
+              /* Enable WWDG and load start counter value*/
+                WWDG_Enable(0x0F);             
+                while(1){
+                asm(" NOP");
+              }
+                asm (" NOP");
+
 		break;
 	}
 

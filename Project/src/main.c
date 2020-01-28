@@ -57,8 +57,7 @@ void bldr_set_autoboot(uint16_t autoboot);
 bootloader_config  bldr_config;
 bootloader_config* p_bldr_config;
 
-
-
+int global_retries = xyzModem_MAX_RETRIES ;
 
 
 
@@ -104,11 +103,6 @@ static struct
 } xyz;
 
 
-#define xyzModem_CHAR_TIMEOUT            2000	/* 2 seconds */
-#define xyzModem_MAX_RETRIES             20
-#define xyzModem_MAX_RETRIES_WITH_CRC    10
-#define xyzModem_CAN_COUNT                3	/* Wait for 3 CAN before quitting */
-#define XMODEM_BUF_SIZE 4096
 
 char xmodemBuf[XMODEM_BUF_SIZE];
 
@@ -124,7 +118,7 @@ char xmodemBuf[XMODEM_BUF_SIZE];
 #define EEPROM_DI	(*(volatile unsigned long *) 0x40018008)
 #define EEPROM_DO	(*(volatile unsigned long *) 0x4001800C)
 #define EEPROM_KEY	(*(volatile unsigned long *) 0x40018010)
-#define NewStackAddr        (*(volatile unsigned long *) 0x08006000)
+
 
 #define NVSTR	0x2000
 #define PROG	0x1000
@@ -140,11 +134,11 @@ char xmodemBuf[XMODEM_BUF_SIZE];
 void bootuart(void);
 void sleep(int id);
 */
-__ramfunc  int Erase(void);
+__ramfunc  int Erase(uint32_t programadr); // this erase only one block 4096 from programadr
 __ramfunc  int Program(void);
 __ramfunc  int Program_cfg(void);
 __ramfunc void sleep(int id);
-
+int Erase_many_blocks(void);  // this erase from programadr to end many blocks
 
 //========== That is address where to we put main programm Koval ======================
 uint32_t programadr=0x08006000;
@@ -261,10 +255,9 @@ unsigned char ReciveByte;
 unsigned char* p_programadr_cfg;
 
 p_programadr_cfg=(unsigned char*)(programadr_cfg);
+p_bldr_config=&bldr_config;
+memcpy(((unsigned char*)(p_bldr_config)),p_programadr_cfg,4);
 
-memcpy((unsigned char*)p_bldr_config,p_programadr_cfg,4);
-bldr_config.autoboot=p_bldr_config->autoboot;
-bldr_config.crc=p_bldr_config->crc;
 
 //bldr_set_autoboot(1);
 int size=loadx_bin(0x08001000);  // 0x08001000 This address is not used  Room420
@@ -294,7 +287,6 @@ int xyzModem_stream_open (connection_info_t * info)
 {
         char c;
 	int stat = 0;
-	int retries = xyzModem_MAX_RETRIES ;
 	int crc_retries = xyzModem_MAX_RETRIES_WITH_CRC;
         int counter;
         unsigned int newstack;
@@ -309,28 +301,15 @@ int xyzModem_stream_open (connection_info_t * info)
 	xyz.total_SOH = 0;
 	xyz.total_STX = 0;
 	xyz.total_CAN = 0;
-//====== Отсылка сообщения о том , что будет расширенный CRC Koval  Зацикливанеи , если
+//====== Отсылка сообщения о том , что будет расширенный CRC Room420  Зацикливанеи , если
 //  по адресу 0x08006000 нет в старшем сегменте адреса установки стека  (0х20000) если есть
-// то после 10 попыток переходит на выполнение программы с 0х08004000 ( учтите что по этому адресу
-// находится адрес стека а программа начинается с 0х08004004
-        while (retries-- > 0){
+// то после 10 попыток переходит на выполнение программы с  programadr=0х08006000 ( учтите что по этому адресу
+// находится адрес стека а программа начинается с 0х08006004  programadr +4
+        while (global_retries-- > 0){
           newstack=NewStackAddr;
-          if ((newstack & 0x2FFF0000 ) != 0x20000000 ){retries++;}  // if there is not stack in 0x080006000 then forever
-/*          change this block on CYGACC_COMM_IF_GETC_TIMEOUT  room420
-            counter=TimerCounter + xyzModem_CHAR_TIMEOUT;
-                    	CYGACC_COMM_IF_PUTC ((xyz.crc_mode ? 'C' : NAK));
-                while ((UART_GetFlagStatus (MDR_UART2, UART_FLAG_RXFF)!= SET) && (counter > TimerCounter)) {
-                            druck_rck();
-                  asm(" NOP");
-                }
-                if ((UART_GetFlagStatus (MDR_UART2, UART_FLAG_RXFF)== SET)) {
-       		xyz.next_blk = 1;
-                  return 0 ;
-                }
-        }
-		return 1;
-          */
-          
+          if (((newstack & 0x2FFF0000 ) != 0x20000000) || (bldr_config.autoboot ==0) ){global_retries++;}  
+          // if there is no stack in 0x080006000 or bldr_config.autoboot ==0 then forever  Room420
+          CYGACC_COMM_IF_PUTC ((xyz.crc_mode ? 'C' : NAK));
           if (CYGACC_COMM_IF_GETC_TIMEOUT(&c)){
            xyz.next_blk = 1; 
              return 0 ;
@@ -584,7 +563,7 @@ int loadx_bin(uint32_t flash_addr_beg)
 	int res, addr = 0, err,param;
         uint32_t flash_addr=flash_addr_beg;
 	info.mode = xyzModem_xmodem;
-
+        uint32_t blockaddr=programadr;
 
 
 
@@ -598,7 +577,7 @@ int loadx_bin(uint32_t flash_addr_beg)
 // ==============   If we receive block of data in xmodemBuf then we erase next page (4096 kb) and programm data in
 // this area of memory (flash memory)
                         __disable_interrupt();
-                 res=Erase();
+                 res=Erase(blockaddr);
                   __enable_interrupt();
 
                   if (res!=0){
@@ -610,7 +589,7 @@ int loadx_bin(uint32_t flash_addr_beg)
                   __disable_interrupt();
                   res=Program();
                   __enable_interrupt();
-
+                  blockaddr+=4096;
                   if (res!=0){
                     asm (" NOP");
                   }
@@ -622,14 +601,14 @@ int loadx_bin(uint32_t flash_addr_beg)
 
  	}
 //==== after success programming or if nobody wants to programm and there is programm already in memory goto bravely,
-//       ( but dont forget to  tie camel before )   Koval ( and Sindbad Seaman) ============
+//         Room420
 //              asm ("VTOR	EQU		0xe000ed08\n"
  //       asm ( "LDR.N     R0,    = 8000000\n");
 uint32_t  newstack;
       newstack=NewStackAddr;
         __set_MSP(newstack);
 
-        asm (  "movw      R0, #0x4000\n"
+        asm (  "movw      R0, #0x6000\n"
                 "movt       R0, #0x0800\n"
                 "LDR	R0,[R0,#4]\n");
 
@@ -639,15 +618,6 @@ uint32_t  newstack;
 
 
         testfunc();   // here we setup address when add additional segment to linker
-
-/*
-                      "LDR    R1, 0xe000ed08	\n"
-			"STR		R0,[R1]\n"
-                                  "LDR     R1,[R0]\n"
-				"MSR		MSP,R1\n"
-				"LDR		R0,[R0,#4]\n");
-//				"BX      R0\n"
-*/
 }
 
 
@@ -664,12 +634,12 @@ __ramfunc void sleep(int id)
 }
 
 
-__ramfunc int Erase(void)  // Here we do not erase all memory  ( only one page ) so this code differs from examples Koval
+__ramfunc int Erase(uint32_t programadr)  // Here we do not erase all memory  ( only one page ) so this code differs from examples Koval
 {
 unsigned int i,i1,i2,eraddr;
         char *prograddrcheck;
 	EEPROM_CMD |= CON;
-        prograddrcheck=(char * )programadr;
+        prograddrcheck=(char *)programadr;
 
 
         EEPROM_CMD |= CON;
@@ -728,7 +698,7 @@ unsigned int i,i1,i2,eraddr;
           prograddrcheck++;
         }
 
-	return 0;
+	return 0;  // all OK =0
 }
 
 
@@ -825,13 +795,24 @@ uint16_t crc;
 }
 }
 
+int Erase_many_blocks(){
+  uint32_t blockaddr;
+  int result;
+  for(blockaddr = programadr; blockaddr < 0x801E000; blockaddr +=4096){
+    result=result | Erase(blockaddr);
+  }
+  
+  return result;  // if every result=0 then all OK=0
+}
+
+
 __ramfunc  int Program_cfg(void)
 {
 unsigned int i1,i3=0,i2=0,a1,a2;
 uint32_t *programcheck_cfg;
 programcheck_cfg=(uint32_t*)programadr_cfg;
 uint32_t data; // For testing ,xxeeadr,xxeedata,xxeekey;
-//================= first  erase this block of memory============
+//================= first  erase this block of memory only sector A ============
 	EEPROM_CMD |= CON;
         EEPROM_CMD |= CON;
 	EEPROM_KEY = 0x8AAA5551;

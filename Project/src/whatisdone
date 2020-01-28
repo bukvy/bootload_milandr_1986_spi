@@ -1,6 +1,49 @@
-1 Работает связь по com порту с терминалкой DI48
-Тестирование светодиодов работает.
-Тестирование eeprom работает.
-Температура работает.
-Сделан раз в секунду тоггл портов вывода на 0-1 работает.
+Режим командной строки в линуксе 
+cli
+Чтобы включить плату сначала надо включить процессорную плату:
+expboard pm_state 0 on
+Потом 
+expboard pm_state НомерСлота on
+Если сразу показывает информацию , то значит работает плата
+Информация о плате вот здесь:
+
+void fp_init(void)
+{
+	memset(fp_driver.rx_buf.buf,  0, FP_PACKET_LEN);
+	memset(fp_driver.tx_buf.buf,  0, FP_PACKET_LEN);
+
+  fp_driver.config.board_id=0x8D48; //0x0D48;   0x8... означает, что она в режиме программирвания.
+  fp_driver.config.board_hw_vers=0x1201;
+  fp_driver.config.board_pof_vers=0x0062;
+  fp_driver.config.board_sw_vers=0x0003;
+
+
+
+для прошивки команда:
+fw_update board 5 /lib/firmware/ao12_iu.S19
+
+
+
+Важные константы:
+
+#define NewStackAddr        (*(volatile unsigned long *) 0x08006000)
+//========== That is address where to we put main programm Koval ======================
+uint32_t programadr=0x08006000;  // Это куда будет зашиваться программа
+uint32_t programadr_cfg=0x08005000;  // that is addres for programmin of btldr_cfg structure  
+
+Работает параллельно на SPI & UART  при подключении к UART порту шлет C  в порт ожидая приглашения от X modema.
+
+
+S19 Делается в IAR дополнительным конвертером моторола формат.
+
+
+Проверяет наличие по адресу основной прошивки адреса стека 0x200000400  и если его нет, то зацикливается на
+бутлоадере. Также проверяет bldr_cfg.autoboot и зацикливается, если 0.
+
+
+
+
+
+
+
 
